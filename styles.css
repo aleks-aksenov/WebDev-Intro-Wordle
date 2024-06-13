@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+
+body {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    font-family: "Open Sans", sans-serif;
+}
+
+.game {
+    width: 400px;
+}
+
+.title {
+    display: flex;
+    height: 180px;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: bold;
+    border-bottom: 2px solid black;
+    margin: 0px 0px 100px 0px;
+}
+
+.word-line {
+    margin: 20px 0px 20px 0px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.letter {
+    display: flex;
+    width: 50px;
+    height: 50px;
+    border: thick solid rgb(206, 195, 195);
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    font-weight: 1000;
+}
+
+@keyframes invalid-guess-border {
+    0% {
+        border: thick solid rgb(206, 195, 195);
+    }
+    100% {
+        border: thick solid red;
+    }
+}
+
+.invalid-guess {
+    animation: invalid-guess-border 1s 1 ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes corect-spot-border {
+    0% {
+        border: thick solid rgb(206, 195, 195);
+    }
+    100% {
+        border: thick solid green;
+    }
+}
+
+.correct-spot {
+    animation: corect-spot-border 1s 1 ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes incorrect-spot-border {
+    0% {
+        border: thick solid rgb(206, 195, 195);
+    }
+    100% {
+        border: thick solid orange;
+    }
+}
+
+.incorrect-spot {
+    animation: incorrect-spot-border 1s 1 ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes not-present-border {
+    0% {
+        border: thick solid rgb(206, 195, 195);
+    }
+    100% {
+        border: thick solid gray;
+    }
+}
+
+.not-present {
+    animation: not-present-border 1s 1 ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes rainbow {
+    100%,
+    0% {
+        color: rgb(255, 0, 0);
+    }
+    8% {
+        color: rgb(255, 127, 0);
+    }
+    16% {
+        color: rgb(255, 255, 0);
+    }
+    25% {
+        color: rgb(127, 255, 0);
+    }
+    33% {
+        color: rgb(0, 255, 0);
+    }
+    41% {
+        color: rgb(0, 255, 127);
+    }
+    50% {
+        color: rgb(0, 255, 255);
+    }
+    58% {
+        color: rgb(0, 127, 255);
+    }
+    66% {
+        color: rgb(0, 0, 255);
+    }
+    75% {
+        color: rgb(127, 0, 255);
+    }
+    83% {
+        color: rgb(255, 0, 255);
+    }
+    91% {
+        color: rgb(255, 0, 127);
+    }
+}
+.rainbow-boi {
+    animation: rainbow 4s infinite linear;
+    font-size: 30px;
+}
