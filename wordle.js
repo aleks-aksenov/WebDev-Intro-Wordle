@@ -80,10 +80,10 @@ function addClassToCurrentLetterBoxes(className) {
     }
 }
 
-function removeClassToCurrentLetterBoxes(className) {
+function removeClassFromCurrentLetterBoxes(className) {
     for (i = attemptCounter * 5; i < attemptCounter * 5 + 5; i++) {
         var letterBox = document.querySelector(`#letter${i}`)
-        letterBox.classList.add(className)
+        letterBox.classList.remove(className)
     }
 }
 
@@ -120,7 +120,7 @@ function handleLetters(keyPressed) {
 
 function handleBackSpace() {
     if (isInvalidGuessReset) {
-        removeClassToCurrentLetterBoxes("invalid-guess")
+        removeClassFromCurrentLetterBoxes("invalid-guess")
         isInvalidGuessReset = false
     }
     const currentLetter = document.querySelector(`#letter${letterCounter - 1}`)
