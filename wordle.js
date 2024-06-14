@@ -1,11 +1,11 @@
-const backspaceKey = "Backspace"
-const enterKey = "Enter"
+const BACKSPACE_KEY = "Backspace"
+const ENTER_KEY = "Enter"
 
-const wordOfTheDayLink = "https://words.dev-apis.com/word-of-the-day"
-const validateWordLink = "https://words.dev-apis.com/validate-word"
+const WORD_OF_THE_DAY_URL = "https://words.dev-apis.com/word-of-the-day"
+const VALIDATE_WORD_URL = "https://words.dev-apis.com/validate-word"
 
-const maxAttempts = 6
-const answerLength = 5
+const MAX_ATTEMPTS = 6
+const ANSWER_LENGTH = 5
 
 let wordOfTheDay = ""
 let currentGuess = ""
@@ -19,7 +19,7 @@ let isInvalidGuessReset = false
 init()
 
 async function init() {
-    wordOfTheDay = await getWordOfTheDay()
+    wordOfTheDay = "ivory"
 }
 
 document.addEventListener("keydown", async function (event) {
@@ -29,8 +29,10 @@ document.addEventListener("keydown", async function (event) {
     }
 
     const keyPressed = event.key
-    if (isLetter(keyPressed)) {
-        if (letterCounter - attemptCounter * answerLength === 5) {
+    const isLineFull =
+        letterCounter - attemptCounter * ANSWER_LENGTH === ANSWER_LENGTH
+    if (isLetterKey(keyPressed)) {
+        if (isLineFull) {
             event.preventDefault()
             return
         }
@@ -39,12 +41,13 @@ document.addEventListener("keydown", async function (event) {
         return
     }
 
-    if (keyPressed == backspaceKey && letterCounter > 0) {
+    const isLineEmpty = letterCounter > 0
+    if (keyPressed == BACKSPACE_KEY && isLineEmpty) {
         handleBackspaceKey()
         return
     }
 
-    if (keyPressed == enterKey && letterCounter % answerLength == 0) {
+    if (keyPressed == ENTER_KEY && isLineFull) {
         await handleEnterKey()
         return
     }
@@ -60,8 +63,8 @@ function handleGameWon() {
 
 function addClassToCurrentLetterBoxes(className) {
     for (
-        i = attemptCounter * answerLength;
-        i < attemptCounter * answerLength + answerLength;
+        i = attemptCounter * ANSWER_LENGTH;
+        i < attemptCounter * ANSWER_LENGTH + ANSWER_LENGTH;
         i++
     ) {
         var letterBox = document.querySelector(`#letter${i}`)
@@ -71,8 +74,8 @@ function addClassToCurrentLetterBoxes(className) {
 
 function removeClassFromCurrentLetterBoxes(className) {
     for (
-        i = attemptCounter * answerLength;
-        i < attemptCounter * answerLength + answerLength;
+        i = attemptCounter * ANSWER_LENGTH;
+        i < attemptCounter * ANSWER_LENGTH + ANSWER_LENGTH;
         i++
     ) {
         var letterBox = document.querySelector(`#letter${i}`)
@@ -86,16 +89,28 @@ function colorInvalidGuess() {
 }
 
 function colorValidGuessLetters(word) {
+    let wordOfTheDayMap = makeMap(wordOfTheDay)
     for (i = 0; i < wordOfTheDay.length; i++) {
         var letterBox = document.querySelector(
-            `#letter${i + attemptCounter * answerLength}`
+            `#letter${i + attemptCounter * ANSWER_LENGTH}`
         )
-        if (wordOfTheDay.includes(word[i])) {
-            if (wordOfTheDay[i] === word[i]) {
-                letterBox.classList.add("correct-spot")
-                continue
-            }
+        if (wordOfTheDay[i] === word[i]) {
+            letterBox.classList.add("correct-spot")
+            wordOfTheDayMap[wordOfTheDay[i]]--
+        }
+    }
 
+    for (i = 0; i < wordOfTheDay.length; i++) {
+        var letterBox = document.querySelector(
+            `#letter${i + attemptCounter * ANSWER_LENGTH}`
+        )
+        if (wordOfTheDay[i] === word[i]) {
+            continue
+        }
+        if (
+            wordOfTheDay.includes(word[i]) &&
+            wordOfTheDayMap[wordOfTheDay[i]] > 0
+        ) {
             letterBox.classList.add("incorrect-spot")
             continue
         }
@@ -104,10 +119,24 @@ function colorValidGuessLetters(word) {
     }
 }
 
+function makeMap(word) {
+    let map = new Map()
+    for (i = 0; i < word.length; i++) {
+        if (!map.has(word[i])) {
+            map.set(word[i], 1)
+            continue
+        }
+
+        map[word[i]]++
+    }
+
+    return map
+}
+
 function handleLetterKeys(keyPressed) {
     const currentLetter = document.querySelector(`#letter${letterCounter}`)
     currentLetter.innerHTML = keyPressed.toUpperCase()
-    currentGuess = currentGuess.concat(keyPressed)
+    currentGuess = currentGuess.concat(keyPressed.toLowerCase())
     letterCounter++
 }
 
@@ -116,10 +145,10 @@ function handleBackspaceKey() {
         removeClassFromCurrentLetterBoxes("invalid-guess")
         isInvalidGuessReset = false
     }
-    const currentLetter = document.querySelector(`#letter${letterCounter - 1}`)
+    letterCounter--
+    const currentLetter = document.querySelector(`#letter${letterCounter}`)
     currentLetter.innerHTML = null
     currentGuess = currentGuess.substring(0, currentGuess.length - 1)
-    letterCounter--
 }
 
 async function handleEnterKey() {
@@ -131,7 +160,7 @@ async function handleEnterKey() {
     const isValidGuess = await validateWord(currentGuess)
     if (isValidGuess) {
         colorValidGuessLetters(currentGuess)
-        if (attemptCounter == maxAttempts - 1) {
+        if (attemptCounter == MAX_ATTEMPTS - 1) {
             alert("You have lost")
             isGameFinished = true
             return
@@ -146,7 +175,7 @@ async function handleEnterKey() {
 }
 
 async function validateWord(word) {
-    const fetchedJson = await fetch(validateWordLink, {
+    const fetchedJson = await fetch(VALIDATE_WORD_URL, {
         method: "POST",
         body: JSON.stringify({
             word: word,
@@ -160,12 +189,12 @@ async function validateWord(word) {
 }
 
 async function getWordOfTheDay() {
-    const fetchedJson = await fetch(wordOfTheDayLink)
+    const fetchedJson = await fetch(WORD_OF_THE_DAY_URL)
     const processedResponse = await fetchedJson.json()
 
     return processedResponse.word
 }
 
-function isLetter(letter) {
+function isLetterKey(letter) {
     return /^[a-zA-Z]$/.test(letter)
 }
