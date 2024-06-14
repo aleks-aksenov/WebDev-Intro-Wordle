@@ -120,7 +120,7 @@ function handleLetters(keyPressed) {
 
 function handleBackSpace() {
     if (isInvalidGuessReset) {
-        fremoveClassToCurrentLetterBoxes("invalid-guess")
+        removeClassToCurrentLetterBoxes("invalid-guess")
         isInvalidGuessReset = false
     }
     const currentLetter = document.querySelector(`#letter${letterCounter - 1}`)
