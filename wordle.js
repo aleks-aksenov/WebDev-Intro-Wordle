@@ -19,16 +19,21 @@ let isInvalidGuessReset = false
 init()
 
 async function init() {
-    wordOfTheDay = "ivory"
+    wordOfTheDay = await getWordOfTheDay()
 }
 
 document.addEventListener("keydown", async function (event) {
-    if (isGameFinished) {
+    const keyPressed = event.key
+    if (
+        isGameFinished &&
+        (keyPressed == BACKSPACE_KEY ||
+            keyPressed == ENTER_KEY ||
+            isLetterKey(keyPressed))
+    ) {
         event.preventDefault()
         return
     }
 
-    const keyPressed = event.key
     const isLineFull =
         letterCounter - attemptCounter * ANSWER_LENGTH === ANSWER_LENGTH
     if (isLetterKey(keyPressed)) {
@@ -89,14 +94,14 @@ function colorInvalidGuess() {
 }
 
 function colorValidGuessLetters(word) {
-    let wordOfTheDayMap = makeMap(wordOfTheDay)
+    let wordOfTheDayMap = makeMap(wordOfTheDay.split(""))
     for (i = 0; i < wordOfTheDay.length; i++) {
         var letterBox = document.querySelector(
             `#letter${i + attemptCounter * ANSWER_LENGTH}`
         )
         if (wordOfTheDay[i] === word[i]) {
             letterBox.classList.add("correct-spot")
-            wordOfTheDayMap[wordOfTheDay[i]]--
+            wordOfTheDayMap.get(wordOfTheDay[i]).val--
         }
     }
 
@@ -109,9 +114,10 @@ function colorValidGuessLetters(word) {
         }
         if (
             wordOfTheDay.includes(word[i]) &&
-            wordOfTheDayMap[wordOfTheDay[i]] > 0
+            wordOfTheDayMap.get(word[i]) > 0
         ) {
             letterBox.classList.add("incorrect-spot")
+            wordOfTheDayMap.get(word[i]).val--
             continue
         }
 
@@ -119,15 +125,15 @@ function colorValidGuessLetters(word) {
     }
 }
 
-function makeMap(word) {
+function makeMap(array) {
     let map = new Map()
-    for (i = 0; i < word.length; i++) {
-        if (!map.has(word[i])) {
-            map.set(word[i], 1)
+    for (i = 0; i < array.length; i++) {
+        if (!map.has(array[i])) {
+            map.set(array[i], { val: 1 })
             continue
         }
 
-        map[word[i]]++
+        map.get(array[i]).val++
     }
 
     return map
